@@ -31,10 +31,13 @@ android {
         jvmTarget = '1.8'
 
     }
+    buildFeatures {
+        viewBinding true
+    }
 
 }
 
-def retrofitVersion = '2.11.0'
+def retrofitVersion = '2.9.0'
 def rxJavaVersion = '3.1.8'
 
 

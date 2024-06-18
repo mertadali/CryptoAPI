@@ -1,5 +1,6 @@
 package com.mertadali.retrofitproject.service
 
+import android.database.Observable
 import com.mertadali.retrofitproject.model.CryptoModel
 import retrofit2.Call
 import retrofit2.http.GET
@@ -9,7 +10,7 @@ interface CryptoAPI {              // Interface -> OOP de diğer sınıfların k
     // API ile çalışırken -> GET, POST, UPDATE, DELETE
 
 
-        //  !!! RETROFİT İLE ÇALIŞIRKEN ANA URL BAZI OBJENİN İÇİNE EXTENSİON KISMI İSE İNTERFACE İÇİNE YAZILIR.
+        //  !!! RETROFİT İLE ÇALIŞIRKEN ANA URL BAZ'I OBJENİN İÇİNE EXTENSİON KISMI İSE İNTERFACE İÇİNE YAZILIR.
 
         //https://raw.githubusercontent.com/
         // atilsamancioglu/K21-JSONDataSet/master/crypto.json
@@ -19,7 +20,9 @@ interface CryptoAPI {              // Interface -> OOP de diğer sınıfların k
 
         @GET("atilsamancioglu/K21-JSONDataSet/master/crypto.json")
 
-        fun getData() : Call<List<CryptoModel>>
+       fun getData() : Call<List<CryptoModel>>
+        // RxJava
+
 
 
 
