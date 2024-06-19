@@ -14,7 +14,7 @@ class RecyclerAdapter(private val cryptoList : ArrayList<CryptoModel>,private va
         fun onItemClicked(cryptoModel: CryptoModel)
     }
 
-    private val color : Array<String> = arrayOf("#4b534e","#001e00","#5b7658","#5b3d7a","#3f4a99","#802200","#267105")
+    private val colors : Array<String> = arrayOf("#4b534e","#001e00","#5b7658","#5b3d7a","#3f4a99","#802200","#267105")
 
     class RowHolder(val binding: RowLayoutBinding) : RecyclerView.ViewHolder(binding.root){
 
@@ -27,7 +27,7 @@ class RecyclerAdapter(private val cryptoList : ArrayList<CryptoModel>,private va
     }
 
     override fun getItemCount(): Int {
-      return   cryptoList.size
+      return cryptoList.size
 
     }
 
@@ -35,7 +35,7 @@ class RecyclerAdapter(private val cryptoList : ArrayList<CryptoModel>,private va
         holder.itemView.setOnClickListener {
             listener.onItemClicked(cryptoList.get(position))
         }
-        holder.itemView.setBackgroundColor(Color.parseColor(color[position %6]))
+        holder.itemView.setBackgroundColor(Color.parseColor(colors[position %6]))
         holder.binding.textPrice.text = cryptoList.get(position).price
         holder.binding.textName.text = cryptoList.get(position).currency
 

@@ -1,11 +1,9 @@
 package com.mertadali.retrofitproject.view
-
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.mertadali.retrofitproject.R
 import com.mertadali.retrofitproject.adapter.RecyclerAdapter
 import com.mertadali.retrofitproject.databinding.ActivityMainBinding
 import com.mertadali.retrofitproject.model.CryptoModel
@@ -23,6 +21,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MainActivity : AppCompatActivity(), RecyclerAdapter.Listener {
 
+
     private val BASE_URL = "https://raw.githubusercontent.com/"
     private var cryptoModelsList : ArrayList<CryptoModel>? = null
     private lateinit var binding: ActivityMainBinding
@@ -37,14 +36,16 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.Listener {
 
         // RecyclerView Adapter
 
+        // DİSPOSABLE -> Tek kullanımlık demek Rxjava için kullanılacak bir obje
+        compositeDisposable = CompositeDisposable()
+
         val layoutManager : RecyclerView.LayoutManager = LinearLayoutManager(this)
         binding.recyclerView.layoutManager = layoutManager
 
 
         loadData()
 
-        // DİSPOSABLE -> Tek kullanımlık demek Rxjava için kullanılacak bir obje
-        compositeDisposable = CompositeDisposable()
+
 
     }
 
@@ -53,54 +54,79 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.Listener {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-
+           .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
+            .build().create(CryptoAPI::class.java)
 
 
         // İşlemleri arka planda yapıp ön planda işleme yaparak kullanıcı arayüzünü bloklamayı engeller.
 
+          compositeDisposable?.add(retrofit.getData()
+              .subscribeOn(Schedulers.io())
+              .observeOn(AndroidSchedulers.mainThread())
+              .subscribe(this::handleResponse))
 
 
 
 
 
+                     // *** BU KISIM RETROFİT İLE YAPILDI ANCAK TEK BİR İŞLEM YAPTIK O YÜZDEN RXJAVA İLE YAPILACAK. ***
 
 
-                   // BU KISIM RETROFİT İLE YAPILDI ANCAK TEK BİR İŞLEM YAPTIK O YÜZDEN RXJAVA İLE YAPILACAK.
+/*      val service = retrofit.create(CryptoAPI::class.java)
+      val call = service.getData()
 
-        /*
-              val service = retrofit.create(CryptoAPI::class.java)
-              val call = service.getData()
+      call.enqueue(object : Callback<List<CryptoModel>> {          // İsteğimizi(request) asyc şekilde almaya yarar. enqueue -> sıraya almak demek.
+          override fun onResponse(
+              p0: Call<List<CryptoModel>>,
+              response: Response<List<CryptoModel>>
+          ) {
+              if (response.isSuccessful) {
+                  response.body()?.let {
+                      cryptoModelsList = ArrayList(it)
 
-              call.enqueue(object : Callback<List<CryptoModel>> {          // İsteğimizi(request) asyc şekilde almaya yarar. enqueue -> sıraya almak demek.
-                  override fun onResponse(
-                      p0: Call<List<CryptoModel>>,
-                      response: Response<List<CryptoModel>>
-                  ) {
-                      if (response.isSuccessful) {
-                          response.body()?.let {
-                              cryptoModelsList = ArrayList(it)
-
-                              recyclerViewAdapter = RecyclerAdapter(cryptoModelsList!!,this@MainActivity)
-                              binding.recyclerView.adapter = recyclerViewAdapter
+                      recyclerViewAdapter = RecyclerAdapter(cryptoModelsList!!,this@MainActivity)
+                      binding.recyclerView.adapter = recyclerViewAdapter
 
 
-                           for (cryptoModel: CryptoModel in cryptoModelsList!!) {
-                                  println(cryptoModel.currency)
-                                  println(cryptoModel.price)
+                   for (cryptoModel: CryptoModel in cryptoModelsList!!) {
+                          println(cryptoModel.currency)
+                          println(cryptoModel.price)
 
-                              }
-                          }
                       }
                   }
+              }
+          }
 
-                  override fun onFailure(p0: Call<List<CryptoModel>>, p1: Throwable) {
-                      p1.printStackTrace()
+          override fun onFailure(p0: Call<List<CryptoModel>>, p1: Throwable) {
+              p1.printStackTrace()
 
-                  }
-              })*/
+          }
+      })*/
     }
+
+
+
+    private fun handleResponse(response : List<CryptoModel>){
+        cryptoModelsList = ArrayList(response)
+
+        cryptoModelsList.let {
+            recyclerViewAdapter = RecyclerAdapter(it!!,this@MainActivity)
+            binding.recyclerView.adapter = recyclerViewAdapter
+        }
+
+    }
+
+
+
 
     override fun onItemClicked(cryptoModel: CryptoModel) {
-        Toast.makeText(this,"Clicked : ${cryptoModel.currency}",Toast.LENGTH_LONG ).show()
+        Toast.makeText(this, "Clicked : ${cryptoModel.currency}", Toast.LENGTH_LONG).show()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        compositeDisposable?.clear()
+    }
+
+
 }
