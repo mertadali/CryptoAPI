@@ -2,6 +2,7 @@ package com.mertadali.retrofitproject.service
 
 import com.mertadali.retrofitproject.model.CryptoModel
 import io.reactivex.rxjava3.core.Observable
+import retrofit2.Response
 import retrofit2.http.GET
 
 interface CryptoAPI {              // Interface -> OOP de diğer sınıfların kullanabilmesi için bir sınıf açıyoruz.
@@ -21,7 +22,8 @@ interface CryptoAPI {              // Interface -> OOP de diğer sınıfların k
 
         // fun getData() : Call<List<CryptoModel>>
         // RxJava
-         fun getData() : Observable<List<CryptoModel>>
+        // fun getData() : Observable<List<CryptoModel>>
+    suspend fun getData() : Response<List<CryptoModel>>
 
 
 
