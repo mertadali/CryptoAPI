@@ -3,6 +3,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.mertadali.retrofitproject.adapter.RecyclerAdapter
@@ -53,9 +54,14 @@ class MainActivity : AppCompatActivity(), RecyclerAdapter.Listener {
 
         loadData()
 
-
-
+        lifecycleScope.launch(exceptionHandler) {
+            supervisorScope {
+                throw Exception("error")
+            }
+        }
     }
+    
+
 
     private fun loadData(){
         //RETROFİT OBJESİ
